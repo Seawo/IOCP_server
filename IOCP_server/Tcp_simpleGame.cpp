@@ -42,6 +42,8 @@ struct PosPacket : public BasePacket
 	}
 
 	int		id = 0;
+	float   horizontal = 0;
+	float	vertical = 0;
 	float	pos[3] = {};
 	float	rot[4] = {};
 };
@@ -128,6 +130,7 @@ void Tcp_simpleGame::Pos(TcpSession* session, BasePacket* packet)
 	PosPacket response;
 	memcpy_s(&response, sizeof(PosPacket), packet, sizeof(PosPacket));
 
+	//std::cout << "id : " << response.id << std::endl;
 	//std::cout << "pos : " << response.pos << std::endl;
 	//std::cout << "rot : " << response.rot << std::endl;
 
