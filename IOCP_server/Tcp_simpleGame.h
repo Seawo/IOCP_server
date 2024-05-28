@@ -19,6 +19,7 @@ public:
     void Pos(TcpSession* session, BasePacket* packet);
     void GET_ID(TcpSession* session, BasePacket* packet);
     void Login(TcpSession* session, BasePacket* packet);
+    void AniState(TcpSession* session, BasePacket* packet);
     void Test(TcpSession* session, BasePacket* packet);
 
     std::string SQLconnect(std::string id);

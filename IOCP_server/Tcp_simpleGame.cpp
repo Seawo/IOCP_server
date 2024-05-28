@@ -19,6 +19,7 @@ enum GAME_PACKET
 	POS,
 	EXIT_USER,
 	LOGIN,
+	ANI_STATE,
 	TEST,
 };
 
@@ -67,6 +68,16 @@ struct LoginPacket : public BasePacket
 	int		check = 0;
 	//char	userNum[100];
 };
+struct AniStatePacket : public BasePacket
+{
+	AniStatePacket()
+	{
+		packet_id = ANI_STATE;
+		packet_len = sizeof(AniStatePacket);
+	}
+	int		id    = 0; // 0 :x  1:o
+	int		state = 0; // 0:idle 1:run 2:jump 3:attack 
+};
 struct TestPacket : public BasePacket
 {
 	TestPacket()
@@ -98,8 +109,8 @@ void Tcp_simpleGame::Init()
 	SIMPLEREGI(GET_ID);
 
 	REGIST_PACKET(packek_handler_, GAME_PACKET::POS, Tcp_simpleGame::Pos);
-
 	REGIST_PACKET(packek_handler_, GAME_PACKET::LOGIN, Tcp_simpleGame::Login);
+	REGIST_PACKET(packek_handler_, GAME_PACKET::ANI_STATE, Tcp_simpleGame::AniState);
 	REGIST_PACKET(packek_handler_, GAME_PACKET::TEST, Tcp_simpleGame::Test);
 
 }
@@ -191,6 +202,27 @@ void Tcp_simpleGame::Login(TcpSession* session, BasePacket* packet)
 	//}
 
 }
+
+void Tcp_simpleGame::AniState(TcpSession* session, BasePacket* packet)
+{
+	AniStatePacket* Ani_packet = reinterpret_cast<AniStatePacket*>(packet);
+
+	AniStatePacket response;
+	memcpy_s(&response, sizeof(AniStatePacket), packet, sizeof(AniStatePacket));
+
+
+	// 전체 공유
+	for (auto iter = session_map_.begin(); iter != session_map_.end(); iter++)
+	{
+		TcpSession* other = reinterpret_cast<TcpSession*>(iter->second);
+
+		other->CallSend(&response, sizeof(AniStatePacket));
+		//std::cout << "id : " << response.id << std::endl;
+		//std::cout << "Anistate : " << response.state << std::endl;
+	}
+}
+
+
 
 #include <locale> // 한글 깨지는걸 방지하기위해 wcout
 #include <codecvt>
